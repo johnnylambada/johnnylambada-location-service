@@ -1,5 +1,4 @@
 /**
- * Copyright 2017 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +17,7 @@ package app;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,7 +71,7 @@ public class LocationActivity extends BaseLocationActivity {
         }
 
         mController
-                .setNotification(getNotification())
+                .setNotification(getNotification(this,mController))
                 .attach(
                     this,
                     this,
@@ -110,20 +110,21 @@ public class LocationActivity extends BaseLocationActivity {
      * when the activity that created it is no longer active. Therefore it should NOT contain
      * any references to the enclosing activity itself.
      */
-    private Notification getNotification() {
+    private static Notification getNotification(Context context, LocationServiceController controller) {
+        final Context applicationContext = context.getApplicationContext();
         // The PendingIntent to launch the activity.
         final PendingIntent activityPendingIntent = PendingIntent.getActivity(
-                getApplicationContext(),
+                applicationContext,
                 0,
-                new Intent(this, LocationActivity.class),
+                new Intent(applicationContext, LocationActivity.class),
                 0
         );
 
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(applicationContext)
+                .addAction(R.drawable.ic_launch, applicationContext.getString(R.string.launch_activity),
                         activityPendingIntent)
-                .addAction(R.drawable.ic_cancel, getString(R.string.remove_location_updates),
-                        mController.getStopLocationServicePendingIntent(getApplicationContext()))
+                .addAction(R.drawable.ic_cancel, applicationContext.getString(R.string.remove_location_updates),
+                        controller.getStopLocationServicePendingIntent(applicationContext))
                 .setContentTitle(DateFormat.getDateTimeInstance().format(new Date()))
                 .setContentText("Your text goes here")
                 .setOngoing(true)
@@ -134,7 +135,7 @@ public class LocationActivity extends BaseLocationActivity {
 
         // Set the Channel ID for Android O.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(mController.getConfiguration().getChannel()); // Channel ID
+            builder.setChannelId(controller.getConfiguration().getChannel()); // Channel ID
         }
 
         return builder.build();
