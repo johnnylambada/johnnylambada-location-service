@@ -18,7 +18,7 @@ Add the following lines to your `app/build.gradle` dependencies:
 
 ```groovy
 // https://github.com/johnnylambada/fibamlscan
-implementation "com.github.johnnylambada:fibamlscan:0.1.2"
+implementation "com.github.johnnylambada:johnnylambada-location-service:0.0.1"
 ```
 
 ### Set up the service using the `LocationServiceController`
